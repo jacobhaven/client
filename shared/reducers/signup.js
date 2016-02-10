@@ -33,6 +33,7 @@ const initialState: SignupState = {
   phase: 'inviteCode'
 }
 
+/* eslint-disable no-fallthrough */
 export default function (state: SignupState = initialState, action: SignupActions): SignupState {
   switch (action.type) {
     case Constants.checkInviteCode:
@@ -110,3 +111,4 @@ export default function (state: SignupState = initialState, action: SignupAction
       return state
   }
 }
+/* eslint-enable no-fallthrough */
