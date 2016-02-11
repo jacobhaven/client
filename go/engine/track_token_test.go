@@ -84,12 +84,12 @@ func TestTempTrackLocal(t *testing.T) {
 	defer tc.Cleanup()
 	fu := CreateAndSignupFakeUser(tc, "track")
 
-	fakeClock := clockwork.NewFakeClockAt(time.Now())
+	fakeClock := clockwork.NewFakeClock()
 	tc.G.Clock = fakeClock
 	// to pick up the new clock...
 	tc.G.ResetLoginState()
 
-	flakeyAPI := flakeyRooterAPI{orig: tc.G.XAPI, hardFail: false, G: tc.G}
+	flakeyAPI := flakeyRooterAPI{orig: tc.G.XAPI, flakeOut: false, G: tc.G}
 	tc.G.XAPI = &flakeyAPI
 
 	idUI := &FakeIdentifyUI{}
@@ -104,6 +104,8 @@ func TestTempTrackLocal(t *testing.T) {
 		IdentifyUI: idUI,
 		SecretUI:   fu.NewSecretUI(),
 	}
+
+	tc.G.Log.Warning("---------------TRACK 1 of Tracy-------------")
 
 	// Identify tracy; all proofs should work
 	eng := NewResolveThenIdentify2(tc.G, arg)
@@ -121,18 +123,22 @@ func TestTempTrackLocal(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	// Now make her Rooter proof fail
-	t.Logf("-- Set for Hard Fail --")
-	flakeyAPI.hardFail = true
+	defer runUntrack(tc.G, fu, username)
+
+	// Now make her Rooter proof fail with a 429
+	flakeyAPI.flakeOut = true
 	idUI = &FakeIdentifyUI{}
 	ctx.IdentifyUI = idUI
 
 	// Advance so that our previous cached success is out of
 	// cache
-	fakeClock.Advance(tc.G.Env.GetProofCacheMediumDur() + time.Minute)
+	fakeClock.Advance(tc.G.Env.GetProofCacheLongDur() + time.Minute)
+
+	tc.G.Log.Warning("---------------TRACK 2 of Tracy-------------")
 
 	eng = NewResolveThenIdentify2(tc.G, arg)
 	eng.testArgs = &Identify2WithUIDTestArgs{noCache: true}
+
 	// Should  get an error
 	if err := RunEngine(eng, ctx); err == nil {
 		t.Fatal("Expected identify error")
@@ -145,6 +151,7 @@ func TestTempTrackLocal(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	tc.G.Log.Warning("---------------TRACK 3 of Tracy-------------")
 	// Identify should work once more because we signed with failures
 	eng = NewResolveThenIdentify2(tc.G, arg)
 	eng.testArgs = &Identify2WithUIDTestArgs{noCache: true}
@@ -169,6 +176,5 @@ func TestTempTrackLocal(t *testing.T) {
 	}
 	t.Logf("Identify failure: %v", err)
 
-	defer runUntrack(tc.G, fu, username)
 	assertTracking(tc, username)
 }

@@ -99,6 +99,8 @@ func TestSoftSnooze(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	defer runUntrack(tc.G, fu, username)
+
 	// Now make her Rooter proof flakey / fail with a 429
 	flakeyAPI.flakeOut = true
 	idUI = &FakeIdentifyUI{}
@@ -139,6 +141,5 @@ func TestSoftSnooze(t *testing.T) {
 		t.Fatal("expected a Rooter error result")
 	}
 
-	defer runUntrack(tc.G, fu, username)
 	assertTracking(tc, username)
 }
