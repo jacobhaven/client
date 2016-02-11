@@ -15,4 +15,4 @@ go build -a -tags "prerelease production" -ldflags="-X github.com/keybase/client
 ::npm i
 ::cd %GOPATH%\src\github.com\keybase\client\desktop
 ::npm i
-::node package.js --arch ia32 --platform win32
+::npm run package — —arch ia32 —platform win32

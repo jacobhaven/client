@@ -501,6 +501,7 @@ func (u *User) TrackChainLinkFor(username string, uid keybase1.UID) (*TrackChain
 	}
 
 	if remote.GetCTime().After(local.GetCTime()) {
+		u.G().Log.Debug("| Returning newer remote")
 		return remote, nil
 	}
 

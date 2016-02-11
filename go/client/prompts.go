@@ -47,4 +47,5 @@ const (
 	PromptDescriptorUpdateSnooze
 	PromptDescriptorDecryptInteractive
 	PromptDescriptorPGPGenEnterID
+	PromptDescriptorTrackExpireLocal
 )

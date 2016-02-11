@@ -181,6 +181,12 @@ func (ui IdentifyTrackUI) Confirm(o *keybase1.IdentifyOutcome) (result keybase1.
 		if result.RemoteConfirmed, err = ui.parent.PromptYesNo(PromptDescriptorTrackPublic, prompt, promptDefault); err != nil {
 			return
 		}
+		if !result.RemoteConfirmed && o.TrackStatus == keybase1.TrackStatus_NEW_FAIL_PROOFS {
+			prompt = "Expire local tracking statement after " + string(ui.G().Env.GetLocalTrackMaxAge()) + "?"
+			if result.ExpiringLocal, err = ui.parent.PromptYesNo(PromptDescriptorTrackPublic, prompt, promptDefault); err != nil {
+				return
+			}
+		}
 	}
 	return
 }
