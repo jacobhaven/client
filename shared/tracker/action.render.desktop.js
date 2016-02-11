@@ -4,6 +4,7 @@ import React, {Component} from 'react'
 import {FlatButton} from 'material-ui'
 import commonStyles from '../styles/common'
 import {normal, checking, warning} from '../constants/tracker'
+import {Text} from '../common-adapters'
 
 import type {Styled} from '../styles/common'
 import type {ActionProps} from './action.render'
@@ -17,7 +18,7 @@ export default class ActionRender extends Component {
     if (!loggedIn) {
       return this.renderLoggedOut()
     } else if (state === checking || !username) {
-      return this.renderPending()
+      return this.renderPending(username)
     } else if (this.props.state === normal) {
       return this.renderNormal(username)
     } else if (this.props.currentlyFollowing) {
@@ -27,10 +28,16 @@ export default class ActionRender extends Component {
     }
   }
 
-  renderPending (): ReactElement {
-    return (
-      <div><p> Loading... </p></div>
-    )
+  renderPending (username: ?string): ReactElement {
+    const centered = {textAlign: 'center', paddingTop: 8}
+    if (username) {
+      return (
+        <div><Text style={centered} type='Body'>{`Verifying ${username}'s identity`}</Text></div>
+      )
+    }
+      return (
+        <div><Text style={centered} type='Body'>{`Loading tracker information...`}</Text></div>
+      )
   }
 
   renderWarningNotFollowed (): ReactElement {
