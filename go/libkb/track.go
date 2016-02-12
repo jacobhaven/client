@@ -414,11 +414,11 @@ func LocalTrackChainLinkFor(tracker, trackee keybase1.UID, g *GlobalContext) (re
 }
 
 func StoreLocalTrack(tracker keybase1.UID, trackee keybase1.UID, expiringLocal bool, statement *jsonw.Wrapper, g *GlobalContext) error {
-	g.Log.Debug("| StoreLocalTrack")
+	g.Log.Debug("| StoreLocalTrack, expiring = %v", expiringLocal)
 	return g.LocalDb.Put(LocalTrackDBKey(tracker, trackee, expiringLocal), nil, statement)
 }
 
 func RemoveLocalTrack(tracker keybase1.UID, trackee keybase1.UID, expiringLocal bool, g *GlobalContext) error {
-	g.Log.Debug("| RemoveLocalTrack")
+	g.Log.Debug("| RemoveLocalTrack, expiring = %v", expiringLocal)
 	return g.LocalDb.Delete(LocalTrackDBKey(tracker, trackee, expiringLocal))
 }
